@@ -42,7 +42,7 @@ while webcam.isOpened():
 
     cv2.imshow("Demo", frame)
 
-    if cv2.waitKey(1) == 27:
+    if cv2.waitKey(1) == ord('q'):
         break
    
 webcam.release()
