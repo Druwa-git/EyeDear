@@ -1,13 +1,8 @@
 # Gaze Tracking
 
-![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)
-![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-[![GitHub stars](https://img.shields.io/github/stars/antoinelame/GazeTracking.svg?style=social)](https://github.com/antoinelame/GazeTracking/stargazers)
 
 This is a Python (2 and 3) library that provides a **webcam-based eye tracking system**. It gives you the exact position of the pupils and the gaze direction, in real time.
-
-[![Demo](https://i.imgur.com/WNqgQkO.gif)](https://youtu.be/YEZMk1P0-yw)
 
 _🚀 Quick note: I'm looking for job opportunities as a software developer, for exciting projects in ambitious companies. Anywhere in the world. Send me an email!_
 
@@ -16,7 +11,7 @@ _🚀 Quick note: I'm looking for job opportunities as a software developer, for
 Clone this project:
 
 ```
-git clone https://github.com/antoinelame/GazeTracking.git
+git clone 
 ```
 
 Install these dependencies (NumPy, OpenCV, Dlib):
@@ -30,7 +25,7 @@ pip install -r requirements.txt
 Run the demo:
 
 ```
-python example.py
+python eyedear.py
 ```
 
 ## Simple Demo
@@ -39,33 +34,43 @@ python example.py
 import cv2
 from gaze_tracking import GazeTracking
 
-gaze = GazeTracking()
-webcam = cv2.VideoCapture(0)
-
-while True:
+while webcam.isOpened():
+    # We get a new frame from the webcam
     _, frame = webcam.read()
+
+    # We send this frame to GazeTracking to analyze it
     gaze.refresh(frame)
 
-    new_frame = gaze.annotated_frame()
+    frame = gaze.annotated_frame()
     text = ""
 
-    if gaze.is_right():
+    if gaze.is_blinking():
+        text = "Blinking"
+    elif gaze.is_right():
         text = "Looking right"
     elif gaze.is_left():
         text = "Looking left"
     elif gaze.is_center():
-        text = "Looking center"
+        if gaze.is_up():
+            text = "Looking upward"
+        elif gaze.is_down():
+            text = "Looking under"
+        else:
+            text = "Looking center"
 
-    cv2.putText(new_frame, text, (60, 60), cv2.FONT_HERSHEY_DUPLEX, 2, (255, 0, 0), 2)
-    cv2.imshow("Demo", new_frame)
+    cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
+
+    left_pupil = gaze.pupil_left_coords()
+    right_pupil = gaze.pupil_right_coords()
+    cv2.putText(frame, "Left pupil:  " + str(left_pupil), (90, 130), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
+    cv2.putText(frame, "Right pupil: " + str(right_pupil), (90, 165), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
+
+    cv2.imshow("Demo", frame)
 
     if cv2.waitKey(1) == 27:
         break
+
 ```
-
-## Documentation
-
-In the following examples, `gaze` refers to an instance of the `GazeTracking` class.
 
 ### Refresh the frame
 
@@ -149,9 +154,7 @@ Returns the main frame with pupils highlighted.
 
 ## You want to help?
 
-Your suggestions, bugs reports and pull requests are welcome and appreciated. You can also starring ⭐️ the project!
 
-If the detection of your pupils is not completely optimal, you can send me a video sample of you looking in different directions. I would use it to improve the algorithm.
 
 ## Licensing
 
