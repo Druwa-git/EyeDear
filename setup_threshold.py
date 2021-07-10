@@ -15,7 +15,7 @@ direction = ["left", "right", "upward", "under"]
 direction_key = ["A", "S", "D", "F"]
 direction_index = 0
 
-thresholdFile = open("threshold.txt", 'w')
+thresholdFile = open("gaze_tracking/threshold.txt", 'w')
 
 while webcam.isOpened():
     _, frame = webcam.read()
@@ -25,8 +25,8 @@ while webcam.isOpened():
     text = "Please turn your eyes to the " + direction[direction_index]
     text_push = "Push Button " + direction_key[direction_index] + " To SetUp Your Threshold!!"
 
-    cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
-    cv2.putText(frame, text_push, (90, 130), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
+    cv2.putText(frame, text, (20, 60), cv2.FONT_HERSHEY_DUPLEX, 1.0, (147, 58, 31), 2)
+    cv2.putText(frame, text_push, (20, 130), cv2.FONT_HERSHEY_DUPLEX, 0.8, (147, 58, 31), 1)
     cv2.imshow("SetUp", frame)
 
     #left

@@ -33,6 +33,22 @@ class GazeTracking(object):
         self.blinking_model = load_model(model_path)
         self.blinking_model.summary()
 
+        #set Threshold
+        try:
+            file_path = os.path.abspath(os.path.join(cwd, "threshold.txt"))
+            threshold_file = open(file_path, 'r')
+            self.left_threshold = float(threshold_file.readline())
+            self.right_threshold = float(threshold_file.readline())
+            self.upward_threshold = float(threshold_file.readline())
+            self.unser_threshold = float(threshold_file.readline())
+            threshold_file.close()
+        except:
+            #default setting
+            self.left_threshold = 0.5
+            self.right_threshold = 0.75
+            self.upward_threshold = 0.7
+            self.under_threshold = 1.1
+
     @property
     def pupils_located(self):
         """Check that the pupils have been located"""
@@ -109,22 +125,22 @@ class GazeTracking(object):
     def is_right(self):
         """Returns true if the user is looking to the right"""
         if self.pupils_located:
-            return self.horizontal_ratio() <= 0.50
+            return self.horizontal_ratio() <= self.right_threshold
 
     def is_left(self):
         """Returns true if the user is looking to the left"""
         if self.pupils_located:
-            return self.horizontal_ratio() >= 0.75
+            return self.horizontal_ratio() >= self.left_threshold
 
     def is_up(self):
         """Returns true if the user is looking to the left"""
         if self.pupils_located:
-            return self.vertical_ratio() <= 0.7
+            return self.vertical_ratio() <= self.upward_threshold
 
     def is_down(self):
         """Returns true if the user is looking to the left"""
         if self.pupils_located:
-            return self.vertical_ratio() >= 1.1
+            return self.vertical_ratio() >= self.under_threshold
 
     def is_center(self):
         """Returns true if the user is looking to the center"""
