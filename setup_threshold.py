@@ -17,7 +17,7 @@ direction_index = 0
 
 thresholdFile = open("threshold.txt", 'w')
 
-while webcam.isOpen():
+while webcam.isOpened():
     _, frame = webcam.read()
     gaze.refresh(frame)
     frame = gaze.annotated_frame()
