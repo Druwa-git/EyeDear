@@ -25,8 +25,8 @@ while webcam.isOpened():
     text = "Please turn your eyes to the " + direction[direction_index]
     text_push = "Push Button " + direction_key[direction_index] + " To SetUp Your Threshold!!"
 
-    cv2.putText(frame, text, (20, 60), cv2.FONT_HERSHEY_DUPLEX, 1.0, (147, 58, 31), 2)
-    cv2.putText(frame, text_push, (20, 130), cv2.FONT_HERSHEY_DUPLEX, 0.8, (147, 58, 31), 1)
+    cv2.putText(frame, text, (20, 60), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 2)
+    cv2.putText(frame, text_push, (20, 130), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
     cv2.imshow("SetUp", frame)
 
     #left

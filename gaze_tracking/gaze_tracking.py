@@ -40,8 +40,9 @@ class GazeTracking(object):
             self.left_threshold = float(threshold_file.readline())
             self.right_threshold = float(threshold_file.readline())
             self.upward_threshold = float(threshold_file.readline())
-            self.unser_threshold = float(threshold_file.readline())
+            self.under_threshold = float(threshold_file.readline())
             threshold_file.close()
+            print("Open File")
         except:
             #default setting
             self.left_threshold = 0.5
