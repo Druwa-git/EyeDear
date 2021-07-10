@@ -35,8 +35,7 @@ while webcam.isOpened():
         if setCount == 10:
             direction_index += 1
             setCount = 0
-            thresholdFile.write(setThreshold / 100)
-            thresholdFile.write("\n")
+            thresholdFile.write(str(setThreshold / 100) + "\n")
             setThreshold = 0
         setThreshold += gaze.horizontal_ratio()
         setCount += 1
