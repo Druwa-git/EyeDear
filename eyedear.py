@@ -5,10 +5,17 @@ Check the README.md for complete documentation.
 
 import cv2
 from gaze_tracking import GazeTracking
+from gaze_tracking import Eye
+from datetime import datetime
 
+eye = Eye()
 gaze = GazeTracking()
 webcam = cv2.VideoCapture(0)
 
+before_blink=False
+blink_count=0
+first_now=datetime.now()    #캠키자마자 찍히는 시간
+first_now=first_now.second
 while webcam.isOpened():
     # We get a new frame from the webcam
     _, frame = webcam.read()
@@ -21,6 +28,10 @@ while webcam.isOpened():
 
     if gaze.is_blinking():
         text = "Blinking"
+        if before_blink==True:
+            continue
+        else:
+            blink_count += 1
     elif gaze.is_right():
         text = "Looking right"
     elif gaze.is_left():
@@ -32,8 +43,14 @@ while webcam.isOpened():
             text = "Looking under"
         else:
             text = "Looking center"
-
+    before_blink=eye.pupil()
     cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
+
+    now = datetime.now()    #현재 시간
+    now = now.second
+    #눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
+    if blink_count<=15 and now==first_now:
+        popup
 
     left_pupil = gaze.pupil_left_coords()
     right_pupil = gaze.pupil_right_coords()

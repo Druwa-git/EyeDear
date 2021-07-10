@@ -1,6 +1,5 @@
 numpy == 1.16.1
 opencv_python == 3.4.8.29
-dlib == 19.16.0
 absl-py==0.13.0
 astunparse==1.6.3
 cachetools==4.2.2
