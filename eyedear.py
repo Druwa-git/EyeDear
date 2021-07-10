@@ -33,6 +33,11 @@ while webcam.isOpened():
         else:
             text = "Looking center"
 
+    print(gaze.out_of_monitor())
+
+    #if gaze.out_of_monitor():
+    #   pass
+
     cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
 
     left_pupil = gaze.pupil_left_coords()

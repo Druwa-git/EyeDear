@@ -50,6 +50,9 @@ class GazeTracking(object):
             self.upward_threshold = 0.7
             self.under_threshold = 1.1
 
+        #check gaze out of monitor
+        self.gaze_in = False # if False, out of monitor
+
     @property
     def pupils_located(self):
         """Check that the pupils have been located"""
@@ -71,12 +74,22 @@ class GazeTracking(object):
             landmarks = self._predictor(frame, faces[0])
             self.eye_left = Eye(frame, landmarks, 0, self.calibration, self.blinking_model)
             self.eye_right = Eye(frame, landmarks, 1, self.calibration, self.blinking_model)
-            print("All Right!!")
+            self.gaze_in = True
 
         except IndexError:
-            print("Error Occur!!")
+            # print("Error Occur!!")
             self.eye_left = None
             self.eye_right = None
+            self.gaze_in = False
+
+    def out_of_monitor(self):
+        if self.gaze_in:
+            if not self.pupils_located:
+                self.gaze_in = False
+            else:
+                if not self.is_center():
+                    self.gaze_in = False
+        return self.gaze_in
 
     def refresh(self, frame):
         """Refreshes the frame and analyzes it.
@@ -152,7 +165,6 @@ class GazeTracking(object):
         """Returns true if the user closes his eyes"""
         #blink 하는 순간 원래 pupil 없어지는 거임
         if self.eye_left is not None and self.eye_right is not None:
-            print(self.eye_left.blinking, self.eye_right.blinking, "is that blink?")
             return self.eye_left.blinking & self.eye_right.blinking
         """
         if self.pupils_located:
