@@ -31,44 +31,44 @@ while webcam.isOpened():
 
     #left
     if cv2.waitKey(1) == ord('a') and direction_index == 0:
-        print(setThreshold)
-        if setCount == 10:
+        print(setThreshold, direction_index)
+        if setCount > 10:
             direction_index += 1
+            thresholdFile.write(str(setThreshold / setCount) + "\n")
             setCount = 0
-            thresholdFile.write(str(setThreshold / 100) + "\n")
             setThreshold = 0
         if gaze.pupils_located:
             setThreshold += gaze.horizontal_ratio()
             setCount += 1
     #right
     elif cv2.waitKey(1) == ord('s') and direction_index == 1:
-        if setCount == 10:
+        print(setThreshold, direction_index)
+        if setCount > 10:
             direction_index += 1
+            thresholdFile.write(str(setThreshold / setCount) + "\n")
             setCount = 0
-            thresholdFile.write(setThreshold / 100)
-            thresholdFile.write("\n")
             setThreshold = 0
         if gaze.pupils_located:
             setThreshold += gaze.horizontal_ratio()
             setCount += 1
     #upward
     elif cv2.waitKey(1) == ord('d') and direction_index == 2:
-        if setCount == 10:
+        print(setThreshold, direction_index)
+        if setCount > 10:
             direction_index += 1
+            thresholdFile.write(str(setThreshold / setCount) + "\n")
             setCount = 0
-            thresholdFile.write(setThreshold / 100)
-            thresholdFile.write("\n")
             setThreshold = 0
         if gaze.pupils_located:
             setThreshold += gaze.vertical_ratio()
             setCount += 1
     #under
     elif cv2.waitKey(1) == ord('f') and direction_index == 3:
-        if setCount == 10:
+        print(setThreshold, direction_index)
+        if setCount > 10:
             direction_index += 1
+            thresholdFile.write(str(setThreshold / setCount) + "\n")
             setCount = 0
-            thresholdFile.write(setThreshold / 100)
-            thresholdFile.write("\n")
             setThreshold = 0
         if gaze.pupils_located:
             setThreshold += gaze.vertical_ratio()
