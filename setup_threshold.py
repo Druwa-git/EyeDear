@@ -24,7 +24,7 @@ while webcam.isOpen():
 
     text = "Please turn your eyes to the " + direction[direction_index]
     text_push = "Push Button " + direction_key[direction_index] + " To SetUp Your Threshold!!"
-    
+
     #left
     if cv2.waitKey(1) == ord('a') and direction_key == 0:
         if setCount == 100:
