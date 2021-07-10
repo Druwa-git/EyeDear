@@ -5,11 +5,11 @@ Check the README.md for complete documentation.
 
 import cv2
 from gaze_tracking import GazeTracking
-from gaze_tracking import Eye
+#from gaze_tracking import Eye
 from datetime import datetime
 from datetime import timedelta
 
-eye = Eye()
+#eye = Eye()
 gaze = GazeTracking()
 webcam = cv2.VideoCapture(0)
 
@@ -49,7 +49,6 @@ while webcam.isOpened():
             text = "Looking under"
         else:
             text = "Looking center"
-
     #print(gaze.out_of_monitor())
     # if out_of_monitor False, no monitor time is not initialize
     # So if out_of_monitor False, your not watch monitor
@@ -63,17 +62,17 @@ while webcam.isOpened():
         no_monitor_time = 0
     """
 
-
-    before_blink=eye.pupil()
+    before_blink=gaze.is_blinking()
     cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
 
     now = datetime.now()    #현재 시간
     now = now.second
+
     #눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
     if blink_count <= 15 and now == first_now:
-        pass
-        #popup
-
+        print(blink_count, '건조해!')
+    elif now == first_now:
+        print(blink_count, '안 건조해!')
 
     left_pupil = gaze.pupil_left_coords()
     right_pupil = gaze.pupil_right_coords()
