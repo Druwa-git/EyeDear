@@ -58,12 +58,12 @@ while webcam.isOpened():
         study_time += (now_study_time - start_study_time)
     start_study_time = now_study_time
 
-
+    print(f"study time : {study_time}")
     if not gaze.out_of_monitor():
         if no_monitor_time == 0:
             print("Your Study Right Now")
             no_monitor_time = datetime.now()
-        elif (datetime.now() - no_monitor_time) > timedelta(seconds=10):
+        elif (datetime.now() - no_monitor_time) > timedelta(seconds=10) and are_you_study:
             print("Your not Study!!!!")
             are_you_study = False
             study_time -= (datetime.now() - no_monitor_time)
