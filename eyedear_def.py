@@ -37,7 +37,10 @@ label2.grid(row=1, column=0)
 label3 = Label(root, text="test", font= ('Helvetica 15 bold'))
 label3.grid(row=2, column=0)
 label_cam = Label(root)
-label_cam.grid(row=4, column=0)
+label_cam.grid(row=3, column=0)
+
+button = Button(root,text="quit", command=root.destroy, width=8, height=1)
+button.grid(row=4, column=0)
 def video_stream():
     global study_time, are_you_study, start_study_time, no_monitor_time, first_now, before_blink, blink_count
     _, frame = webcam.read()
@@ -116,8 +119,6 @@ def video_stream():
         imgtk = ImageTk.PhotoImage(image=img)
         label_cam.imgtk = imgtk
         label_cam.configure(image=imgtk)
-        if cv2.waitKey(1) == ord('q'):
-            root.destroy()
         label_cam.after(1, video_stream)
 
 video_stream()
