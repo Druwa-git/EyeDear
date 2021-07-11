@@ -91,16 +91,11 @@ while webcam.isOpened():
         blink_count=0
 
     face_loc = gaze.face_coords()
-    if face_loc == None:
-        continue
-
-    try:
+    if face_loc != None:
         cv2.putText(frame, "right_top: " , (face_loc.right(), face_loc.top()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
         cv2.putText(frame, "right_bottom: " , (face_loc.right(), face_loc.bottom()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
         cv2.putText(frame, "left_bottom: " , (face_loc.left(), face_loc.bottom()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
         cv2.putText(frame, "left_top: " , (face_loc.left(), face_loc.top()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
-    except:
-        pass
 
     cv2.imshow("EyeDear", frame)
 
