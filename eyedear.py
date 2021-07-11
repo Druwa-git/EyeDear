@@ -16,8 +16,9 @@ webcam = cv2.VideoCapture(0)
 
 before_blink = False
 blink_count = 0
-first_now = datetime.now()  # 캠키자마자 찍히는 시간
-first_now = first_now.second
+count_blink_one_minute = datetime.now()
+#first_now = datetime.now()  # 캠키자마자 찍히는 시간
+#first_now = first_now.second
 
 # count study time
 start_study_time = datetime.now()  # check before study
@@ -33,6 +34,7 @@ face_std_y = 0
 
 # stay pose
 pose_time = datetime.now()
+
 
 root = Tk()
 root.title('화면')
@@ -52,7 +54,7 @@ button = Button(root,text="quit", command=root.destroy, width=8, height=1)
 button.grid(row=4, column=0)
 def video_stream():
     global study_time, are_you_study, start_study_time, no_monitor_time
-    global first_now, before_blink, blink_count
+    global count_blink_one_minute, before_blink, blink_count
     global face_x, face_y, face_std_x, face_std_y, pose_time
 
     _, frame = webcam.read()
@@ -117,15 +119,17 @@ def video_stream():
 
         cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
 
-        now = now_study_time.second # 현재 시간
+        # now = now_study_time.second # 현재 시간
 
         # 눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
-        if blink_count <= 15 and now == first_now:
-            label1.configure(text = f"1분동안 눈을 깜빡인 횟수 : {blink_count}, 건조해!")
-            blink_count = 0
-        elif now == first_now:
-            label1.configure(text = f"1분동안 눈을 깜빡인 횟수 : {blink_count}, 안 건조해!")
-            blink_count = 0
+        if (now_study_time - count_blink_one_minute) > timedelta(seconds=60):
+            count_blink_one_minute = datetime.now()
+            if blink_count <= 15:
+                label1.configure(text = f"1분동안 눈을 깜빡인 횟수 : {blink_count}, 건조해!")
+                blink_count = 0
+            else:
+                label1.configure(text = f"1분동안 눈을 깜빡인 횟수 : {blink_count}, 안 건조해!")
+                blink_count = 0
 
         face_loc = gaze.face_coords()
         if face_loc != None:
