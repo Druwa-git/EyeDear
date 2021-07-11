@@ -20,7 +20,6 @@ class Eye(object):
         self.center = None
         self.pupil = None
         self.IMG_SIZE = (34, 26)
-
         self._analyze(original_frame, landmarks, side, calibration, blinking_model)
 
     @staticmethod

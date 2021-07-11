@@ -18,7 +18,7 @@ while webcam.isOpened():
 
     frame = gaze.annotated_frame()
     text = ""
-
+    
     if gaze.is_blinking():
         text = "Blinking"
     elif gaze.is_right():
@@ -37,8 +37,24 @@ while webcam.isOpened():
 
     left_pupil = gaze.pupil_left_coords()
     right_pupil = gaze.pupil_right_coords()
+    face_loc = gaze.face_coords()
+    if face_loc == None:
+        continue
+
     cv2.putText(frame, "Left pupil:  " + str(left_pupil), (90, 130), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
     cv2.putText(frame, "Right pupil: " + str(right_pupil), (90, 165), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
+
+    try:
+        cv2.putText(frame, "right_top: " , (face_loc.right(), face_loc.top()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
+        cv2.putText(frame, "right_bottom: " , (face_loc.right(), face_loc.bottom()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
+        cv2.putText(frame, "left_bottom: " , (face_loc.left(), face_loc.bottom()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
+        cv2.putText(frame, "left_top: " , (face_loc.left(), face_loc.top()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
+    except:
+        pass
+
+    
+
+
 
     cv2.imshow("Demo", frame)
 
