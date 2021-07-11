@@ -39,19 +39,22 @@ pose_time = datetime.now()
 root = Tk()
 root.title('화면')
 root.geometry("+500+10")
-label1 = Label(root, text="안구건조증", font= ('Helvetica 15 bold'))
-label1.grid(row=0, column=0)
+label1 = Label(root, text="안구건조증 증상 측정 중입니다.", font= ('Helvetica 15 bold'), height=2, width=28, borderwidth=2, relief="ridge")
+label1.grid(row=0, column=0, pady=2)
 
-label2 = Label(root, text="자세교정", font= ('Helvetica 15 bold'))
-label2.grid(row=1, column=0)
+label_blink_count = Label(root, text="깜빡임 0번", font= ('Helvetica 15 bold'), height=2, width=18, borderwidth=2, relief="ridge")
+label_blink_count.grid(row=0, column=1)
 
-label3 = Label(root, text="공부시간", font= ('Helvetica 15 bold'))
-label3.grid(row=2, column=0)
+label2 = Label(root, text="자세교정", font= ('Helvetica 15 bold'), height=2, width=50, borderwidth=2, relief="ridge")
+label2.grid(row=1, column=0, columnspan=2, pady=2)
+
+label3 = Label(root, text="공부시간", font= ('Helvetica 15 bold'), height=2, width=50, borderwidth=2, relief="ridge")
+label3.grid(row=2, column=0, columnspan=2, pady=2)
 label_cam = Label(root)
-label_cam.grid(row=3, column=0)
+label_cam.grid(row=3, column=0, columnspan=2, pady=2)
 
-button = Button(root,text="quit", command=root.destroy, width=8, height=1)
-button.grid(row=4, column=0)
+button = Button(root, text="quit", command=root.destroy, width=10, height=2, font= ('Helvetica 15 bold'))
+button.grid(row=4, column=0, columnspan=2, pady=2)
 def video_stream():
     global study_time, are_you_study, start_study_time, no_monitor_time
     global count_blink_one_minute, before_blink, blink_count
@@ -74,6 +77,7 @@ def video_stream():
             if before_blink == False:
                 blink_count += 1
                 before_blink = True
+                label_blink_count.configure(text=f"깜빡임 {str(blink_count)}번")
         elif gaze.is_right():
             before_blink = False
             text = "Looking right"
@@ -125,27 +129,27 @@ def video_stream():
         if (now_study_time - count_blink_one_minute) > timedelta(seconds=60):
             count_blink_one_minute = datetime.now()
             if blink_count <= 15:
-                label1.configure(text = f"1분동안 눈을 깜빡인 횟수 : {blink_count}, 건조해!")
+                label1.configure(text = f"건조해!", fg='red')
                 blink_count = 0
             else:
-                label1.configure(text = f"1분동안 눈을 깜빡인 횟수 : {blink_count}, 안 건조해!")
+                label1.configure(text = f"안 건조해!", fg='black')
                 blink_count = 0
 
         face_loc = gaze.face_coords()
         if face_loc != None:
             face_x, face_y = face_loc.center().x, face_loc.center().y
             if face_std_x == 0 and face_std_y == 0:
-                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~")
+                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~", fg="black")
                 pose_time = datetime.now()
                 face_std_x = face_x
                 face_std_y = face_y
             elif abs(face_std_x - face_x) > 100 or abs(face_std_y - face_y) > 50:
-                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~")
+                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~", fg="black")
                 pose_time = datetime.now()
                 face_std_x = face_x
                 face_std_y = face_y
             elif (now_study_time - pose_time) > timedelta(minutes=1):
-                label2.configure(text="슬슬 자세를 고치세요.")
+                label2.configure(text="슬슬 자세를 고치세요.", fg="red")
             #print((now_study_time - pose_time))
             cv2.putText(frame, "C", (face_loc.center().x, face_loc.center().y), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
 
