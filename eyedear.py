@@ -5,7 +5,6 @@ Check the README.md for complete documentation.
 
 import cv2
 from gaze_tracking import GazeTracking
-# from gaze_tracking import Eye
 from datetime import datetime
 from datetime import timedelta
 from tkinter import *
@@ -49,7 +48,8 @@ label3.grid(row=2, column=0)
 label_cam = Label(root)
 label_cam.grid(row=4, column=0)
 
-
+button = Button(root,text="quit", command=root.destroy, width=8, height=1)
+button.grid(row=4, column=0)
 def video_stream():
     global study_time, are_you_study, start_study_time, no_monitor_time
     global first_now, before_blink, blink_count
