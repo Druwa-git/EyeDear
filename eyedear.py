@@ -121,28 +121,28 @@ def video_stream():
 
         # 눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
         if blink_count <= 15 and now == first_now:
-            label1.configure(text = f"{blink_count}, 건조해!")
+            label1.configure(text = f"1분동안 눈을 깜빡인 횟수 : {blink_count}, 건조해!")
             blink_count = 0
         elif now == first_now:
-            label1.configure(text = f"{blink_count}, 안 건조해!")
+            label1.configure(text = f"1분동안 눈을 깜빡인 횟수 : {blink_count}, 안 건조해!")
             blink_count = 0
 
         face_loc = gaze.face_coords()
         if face_loc != None:
             face_x, face_y = face_loc.center().x, face_loc.center().y
             if face_std_x == 0 and face_std_y == 0:
-                label2.configure(text="안 고쳐도 될 듯?")
+                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~")
                 pose_time = datetime.now()
                 face_std_x = face_x
                 face_std_y = face_y
             elif abs(face_std_x - face_x) > 100 or abs(face_std_y - face_y) > 50:
-                label2.configure(text="안 고쳐도 될 듯?")
+                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~")
                 pose_time = datetime.now()
                 face_std_x = face_x
                 face_std_y = face_y
             elif (now_study_time - pose_time) > timedelta(minutes=1):
-                label2.configure(text="슬슬 자세를 고쳐")
-            print((now_study_time - pose_time))
+                label2.configure(text="슬슬 자세를 고치세요.")
+            #print((now_study_time - pose_time))
             cv2.putText(frame, "C", (face_loc.center().x, face_loc.center().y), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
 
             # cv2.imshow("Eye Dear", frame)
