@@ -43,10 +43,10 @@ label1.grid(row=0, column=0)
 label2 = Label(root, text="자세교정", font= ('Helvetica 15 bold'))
 label2.grid(row=1, column=0)
 
-label3 = Label(root, text="test", font= ('Helvetica 15 bold'))
+label3 = Label(root, text="공부시간", font= ('Helvetica 15 bold'))
 label3.grid(row=2, column=0)
 label_cam = Label(root)
-label_cam.grid(row=4, column=0)
+label_cam.grid(row=3, column=0)
 
 button = Button(root,text="quit", command=root.destroy, width=8, height=1)
 button.grid(row=4, column=0)
@@ -94,7 +94,7 @@ def video_stream():
             if no_monitor_time == 0:
                 print("Your Study Right Now")
                 no_monitor_time = datetime.now()
-            elif (datetime.now() - no_monitor_time) > timedelta(seconds=10):
+            elif (datetime.now() - no_monitor_time) > timedelta(seconds=10) and are_you_study:
                 print("Your not Study!!!!")
                 are_you_study = False
                 study_time -= (datetime.now() - no_monitor_time)
@@ -102,31 +102,36 @@ def video_stream():
             are_you_study = True
             no_monitor_time = 0
 
+        #label3 show study time
+        label3.configure(text = str(study_time))
+
         cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
 
         now = now_study_time.second # 현재 시간
 
         # 눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
         if blink_count <= 15 and now == first_now:
-            print(blink_count, '건조해!')
+            label1.configure(text = f"{blink_count}, 건조해!")
             blink_count = 0
         elif now == first_now:
-            print(blink_count, '안 건조해!')
+            label1.configure(text = f"{blink_count}, 안 건조해!")
             blink_count = 0
 
         face_loc = gaze.face_coords()
         if face_loc != None:
             face_x, face_y = face_loc.center().x, face_loc.center().y
             if face_std_x == 0 and face_std_y == 0:
+                label2.configure(text="안 고쳐도 될 듯?")
                 pose_time = datetime.now()
                 face_std_x = face_x
                 face_std_y = face_y
             elif abs(face_std_x - face_x) > 100 or abs(face_std_y - face_y) > 50:
+                label2.configure(text="안 고쳐도 될 듯?")
                 pose_time = datetime.now()
                 face_std_x = face_x
                 face_std_y = face_y
             elif (now_study_time - pose_time) > timedelta(minutes=1):
-                print("자세를 고쳐")
+                label2.configure(text="슬슬 자세를 고쳐")
             print((now_study_time - pose_time))
             cv2.putText(frame, "C", (face_loc.center().x, face_loc.center().y), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
 
