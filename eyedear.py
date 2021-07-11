@@ -5,24 +5,33 @@ Check the README.md for complete documentation.
 
 import cv2
 from gaze_tracking import GazeTracking
-#from gaze_tracking import Eye
+# from gaze_tracking import Eye
 from datetime import datetime
 from datetime import timedelta
 
-#eye = Eye()
+# eye = Eye()
 gaze = GazeTracking()
 webcam = cv2.VideoCapture(0)
 
-before_blink=False
-blink_count=0
-first_now=datetime.now()    #캠키자마자 찍히는 시간
-first_now=first_now.second
+before_blink = False
+blink_count = 0
+first_now = datetime.now()  # 캠키자마자 찍히는 시간
+first_now = first_now.second
 
 # count study time
-start_study_time = datetime.now() # check before study
-no_monitor_time = 0 # if no monitor time is zero, the pupil is located.
-study_time = timedelta(seconds=0) # real study time
-are_you_study = False # check person study or not
+start_study_time = datetime.now()  # check before study
+no_monitor_time = 0  # if no monitor time is zero, the pupil is located.
+study_time = timedelta(seconds=0)  # real study time
+are_you_study = False  # check person study or not
+
+# face coords
+face_x = 0
+face_y = 0
+face_std_x = 0
+face_std_y = 0
+
+# stay pose
+pose_time = datetime.now()
 
 while webcam.isOpened():
     # We get a new frame from the webcam
@@ -33,7 +42,7 @@ while webcam.isOpened():
 
     frame = gaze.annotated_frame()
     text = ""
-    
+
     if gaze.is_blinking():
         text = "Blinking"
         if before_blink == True:
@@ -47,7 +56,7 @@ while webcam.isOpened():
     elif gaze.is_left():
         before_blink = False
         text = "Looking left"
-    elif gaze.is_center():#gaze up and under
+    elif gaze.is_center():  # gaze up and under
         before_blink = False
         if gaze.is_up():
             text = "Looking upward"
@@ -65,7 +74,7 @@ while webcam.isOpened():
         study_time += (now_study_time - start_study_time)
     start_study_time = now_study_time
 
-    print(f"study time : {study_time}")
+    # print(f"study time : {study_time}")
     if not gaze.out_of_monitor():
         if no_monitor_time == 0:
             no_monitor_time = datetime.now()
@@ -76,26 +85,34 @@ while webcam.isOpened():
         are_you_study = True
         no_monitor_time = 0
 
-
     # before_blink=gaze.is_blinking()
     cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
-    now = datetime.now()    #현재 시간
-    now = now.second
 
-    #눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
+    now = now_study_time.second # 현재 시간
+
+    # 눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
     if blink_count <= 15 and now == first_now:
         print(blink_count, '건조해!')
-        blink_count=0
+        blink_count = 0
     elif now == first_now:
         print(blink_count, '안 건조해!')
-        blink_count=0
+        blink_count = 0
 
     face_loc = gaze.face_coords()
     if face_loc != None:
-        cv2.putText(frame, "right_top: " , (face_loc.right(), face_loc.top()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
-        cv2.putText(frame, "right_bottom: " , (face_loc.right(), face_loc.bottom()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
-        cv2.putText(frame, "left_bottom: " , (face_loc.left(), face_loc.bottom()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
-        cv2.putText(frame, "left_top: " , (face_loc.left(), face_loc.top()), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
+        face_x, face_y = face_loc.center().x, face_loc.center().y
+        if face_std_x == 0 and face_std_y == 0:
+            pose_time = datetime.now()
+            face_std_x = face_x
+            face_std_y = face_y
+        elif abs(face_std_x - face_x) > 100 or abs(face_std_y - face_y) > 50:
+            pose_time = datetime.now()
+            face_std_x = face_x
+            face_std_y = face_y
+        elif (now_study_time - pose_time) > timedelta(minutes=1):
+            print("자세를 고쳐")
+        print((now_study_time - pose_time))
+        cv2.putText(frame, "C", (face_loc.center().x, face_loc.center().y), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
 
     cv2.imshow("EyeDear", frame)
 
@@ -103,6 +120,6 @@ while webcam.isOpened():
         break
 else:
     print("WebCam is not detected")
-   
+
 webcam.release()
 cv2.destroyAllWindows()

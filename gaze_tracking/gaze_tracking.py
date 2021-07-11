@@ -174,7 +174,6 @@ class GazeTracking(object):
         """
 
     def face_coords(self):
-
         return self.face_location
 
     def annotated_frame(self):
