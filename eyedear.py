@@ -71,17 +71,23 @@ def video_stream():
             text = "Blinking"
             if before_blink == False:
                 blink_count += 1
+                before_blink = True
         elif gaze.is_right():
+            before_blink = False
             text = "Looking right"
         elif gaze.is_left():
+            before_blink = False
             text = "Looking left"
         elif gaze.is_center():
+            before_blink = False
             if gaze.is_up():
                 text = "Looking upward"
             elif gaze.is_down():
                 text = "Looking under"
             else:
                 text = "Looking center"
+        else:
+            before_blink = False
         #print(gaze.out_of_monitor())
         # if out_of_monitor False, no monitor time is not initialize
         # So if out_of_monitor False, your not watch monitor
