@@ -81,8 +81,10 @@ while webcam.isOpened():
     #눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
     if blink_count <= 15 and now == first_now:
         print(blink_count, '건조해!')
+        blink_count=0
     elif now == first_now:
         print(blink_count, '안 건조해!')
+        blink_count=0
 
     left_pupil = gaze.pupil_left_coords()
     right_pupil = gaze.pupil_right_coords()
