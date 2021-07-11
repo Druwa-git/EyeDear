@@ -28,7 +28,7 @@ are_you_study = False
 root = Tk()
 root.title('화면')
 root.geometry("+500+10")
-label1 = Label(root, text="안구건조증", font= ('Helvetica 15 bold'))
+label1 = Label(root, text="1분간 깜빡임 횟수 : " + str(blink_count), font= ('Helvetica 15 bold'))
 label1.grid(row=0, column=0)
 
 label2 = Label(root, text="자세교정", font= ('Helvetica 15 bold'))
@@ -113,6 +113,16 @@ def video_stream():
         cv2.putText(frame, "Left pupil:  " + str(left_pupil), (90, 130), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
         cv2.putText(frame, "Right pupil: " + str(right_pupil), (90, 165), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
 
+        blink_text = "1분간 깜빡임 횟수 : " + str(blink_count)
+        label1.configure(text=blink_text)
+        label3.configure(text="")
+        print(blink_count)
+        print(first_now)
+
+        print(start_study_time)
+        print(no_monitor_time)
+        print(study_time)
+        print(are_you_study)
         # cv2.imshow("Eye Dear", frame)
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(cv2image)
@@ -122,8 +132,4 @@ def video_stream():
         label_cam.after(1, video_stream)
 
 video_stream()
-
 root.mainloop()
-
-webcam.release()
-cv2.destroyAllWindows()
