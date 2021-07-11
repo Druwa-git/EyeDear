@@ -141,6 +141,3 @@ def video_stream():
 
 video_stream()
 root.mainloop()
-
-webcam.release()
-cv2.destroyAllWindows()
