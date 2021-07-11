@@ -1,3 +1,4 @@
+'''
 #잘가,,,,
 import tkinter as tk
 
@@ -19,7 +20,7 @@ class PopupWindow(tk.Tk):
 
 
 
-'''
+
     # 1. 눈깜빡임 횟수가 1분에 15회 이하면 알람띄워주기
     def blink_alarm(self):
     blink_alarm_text = tk.Label(window, text='Blink_alarm : ')

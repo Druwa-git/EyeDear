@@ -2,7 +2,6 @@
 Demonstration of the GazeTracking library.
 Check the README.md for complete documentation.
 """
-
 import cv2
 from gaze_tracking import GazeTracking
 from datetime import datetime
@@ -71,10 +70,13 @@ def video_stream():
             text = "Blinking"
             if before_blink == False:
                 blink_count += 1
+                before_blink=True
         elif gaze.is_right():
             text = "Looking right"
+            before_blink=False
         elif gaze.is_left():
             text = "Looking left"
+            before_blink = False
         elif gaze.is_center():
             if gaze.is_up():
                 text = "Looking upward"
@@ -82,6 +84,9 @@ def video_stream():
                 text = "Looking under"
             else:
                 text = "Looking center"
+            before_blink = False
+        else:
+            before_blink = False
         #print(gaze.out_of_monitor())
         # if out_of_monitor False, no monitor time is not initialize
         # So if out_of_monitor False, your not watch monitor
@@ -112,10 +117,13 @@ def video_stream():
         # 눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
         if blink_count <= 15 and now == first_now:
             label1.configure(text = f"{blink_count}, 건조해!")
-            blink_count = 0
         elif now == first_now:
             label1.configure(text = f"{blink_count}, 안 건조해!")
-            blink_count = 0
+        blink_count_zero_time=int(first_now)+1
+        if blink_count_zero_time==60:
+            blink_count_zero_time=0
+        if int(now)==blink_count_zero_time:
+            blink_count=0
 
         face_loc = gaze.face_coords()
         if face_loc != None:
