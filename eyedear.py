@@ -18,9 +18,10 @@ blink_count=0
 first_now=datetime.now()    #캠키자마자 찍히는 시간
 first_now=first_now.second
 
-start_study_time = datetime.now().second
+start_study_time = datetime.now()
 no_monitor_time = 0
-study_time = 0
+study_time = timedelta(seconds=0)
+are_you_study = False
 
 while webcam.isOpened():
     # We get a new frame from the webcam
@@ -52,15 +53,24 @@ while webcam.isOpened():
     #print(gaze.out_of_monitor())
     # if out_of_monitor False, no monitor time is not initialize
     # So if out_of_monitor False, your not watch monitor
-    """
+    now_study_time = datetime.now()
+    if are_you_study:
+        study_time += (now_study_time - start_study_time)
+    start_study_time = now_study_time
+
+
     if not gaze.out_of_monitor():
         if no_monitor_time == 0:
-            no_monitor_time = datetime.now().second
-        elif datetime.now().second - no_monitor_time > 10:
-            study_time -= (datetime.now().second - no_monitor_time)
+            print("Your Study Right Now")
+            no_monitor_time = datetime.now()
+        elif (datetime.now() - no_monitor_time) > timedelta(seconds=10):
+            print("Your not Study!!!!")
+            are_you_study = False
+            study_time -= (datetime.now() - no_monitor_time)
     else:
+        are_you_study = True
         no_monitor_time = 0
-    """
+
 
     before_blink=gaze.is_blinking()
     cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
@@ -83,6 +93,8 @@ while webcam.isOpened():
 
     if cv2.waitKey(1) == ord('q'):
         break
+else:
+    print("WebCam is not detected")
    
 webcam.release()
 cv2.destroyAllWindows()
