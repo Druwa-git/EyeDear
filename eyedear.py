@@ -109,7 +109,11 @@ def video_stream():
             no_monitor_time = 0
 
         #label3 show study time
-        label3.configure(text = str(study_time))
+        study_time_second = study_time.total_seconds()
+        study_hour = int(study_time_second / 3600)
+        study_minute = int((study_time_second % 3600) / 60)
+        study_second = int(study_time_second % 60)
+        label3.configure(text = f"공부시간 : {study_hour}시간 {study_minute}분 {study_second}초")
 
         cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
 
