@@ -9,6 +9,7 @@ from datetime import datetime
 from datetime import timedelta
 from tkinter import *
 from PIL import ImageTk, Image
+from setup_threshold import setup
 
 # eye = Eye()
 gaze = GazeTracking()
@@ -49,6 +50,9 @@ label3 = Label(root, text="공부시간", font= ('Helvetica 15 bold'))
 label3.grid(row=2, column=0)
 label_cam = Label(root)
 label_cam.grid(row=3, column=0)
+
+setup_btn = Button(root, text="setup", command=setup)
+setup_btn.grid(row=4, column=1)
 
 button = Button(root,text="quit", command=root.destroy, width=8, height=1)
 button.grid(row=4, column=0)
