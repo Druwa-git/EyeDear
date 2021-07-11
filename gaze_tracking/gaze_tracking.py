@@ -19,7 +19,7 @@ class GazeTracking(object):
         self.eye_left = None
         self.eye_right = None
         self.calibration = Calibration()
-
+        self.face_location = None
         # _face_detector is used to detect faces
         self._face_detector = dlib.get_frontal_face_detector()
 
@@ -70,15 +70,18 @@ class GazeTracking(object):
         frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
         faces = self._face_detector(frame)
         try:
+    
             landmarks = self._predictor(frame, faces[0])
             self.eye_left = Eye(frame, landmarks, 0, self.calibration, self.blinking_model)
             self.eye_right = Eye(frame, landmarks, 1, self.calibration, self.blinking_model)
+            self.face_location = faces[0]
             self.gaze_in = True
 
         except IndexError:
             # print("Error Occur!!")
             self.eye_left = None
             self.eye_right = None
+            self.face_location = None
             self.gaze_in = False
 
     def out_of_monitor(self):
@@ -170,6 +173,10 @@ class GazeTracking(object):
             blinking_ratio = (self.eye_left.blinking + self.eye_right.blinking) / 2
             return blinking_ratio > 3.8
         """
+
+    def face_coords(self):
+
+        return self.face_location
 
     def annotated_frame(self):
         """Returns the main frame with pupils highlighted"""
