@@ -6,9 +6,9 @@ Pupil Threshold save in text file.
 import cv2
 from gaze_tracking import GazeTracking
 
+gaze = GazeTracking()
+webcam = cv2.VideoCapture(0)
 def setup():
-    gaze = GazeTracking()
-    webcam = cv2.VideoCapture(0)
     setCount = 0
     setThreshold = 0
 
@@ -19,16 +19,16 @@ def setup():
     thresholdFile = open("gaze_tracking/threshold.txt", 'w')
 
     while webcam.isOpened():
-        _, frame = webcam.read()
-        gaze.refresh(frame)
-        frame = gaze.annotated_frame()
+        _, frame2 = webcam.read()
+        gaze.refresh(frame2)
+        frame2 = gaze.annotated_frame()
 
         text = "Please turn your eyes to the " + direction[direction_index]
         text_push = "Push Button " + direction_key[direction_index] + " To SetUp Your Threshold!!"
 
-        cv2.putText(frame, text, (20, 60), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 2)
-        cv2.putText(frame, text_push, (20, 130), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
-        cv2.imshow("SetUp", frame)
+        cv2.putText(frame2, text, (20, 60), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 2)
+        cv2.putText(frame2, text_push, (20, 130), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
+        cv2.imshow("SetUp", frame2)
 
         #left
         if cv2.waitKey(1) == ord('a') and direction_index == 0:
@@ -82,8 +82,6 @@ def setup():
         if cv2.waitKey(1) == ord('q'):
             break
 
-    cv2.destroyAllWindows()
+    cv2.destroyWindow("SetUp")
     thresholdFile.close()
 
-if __name__ == '__main__':
-    setup()
