@@ -18,10 +18,11 @@ blink_count=0
 first_now=datetime.now()    #캠키자마자 찍히는 시간
 first_now=first_now.second
 
-start_study_time = datetime.now()
-no_monitor_time = 0
-study_time = timedelta(seconds=0)
-are_you_study = False
+# count study time
+start_study_time = datetime.now() # check before study
+no_monitor_time = 0 # if no monitor time is zero, the pupil is located.
+study_time = timedelta(seconds=0) # real study time
+are_you_study = False # check person study or not
 
 while webcam.isOpened():
     # We get a new frame from the webcam
@@ -34,6 +35,7 @@ while webcam.isOpened():
     text = ""
 
     if gaze.is_blinking():
+        print("Blinking")
         text = "Blinking"
         if before_blink == True:
             continue
@@ -43,14 +45,14 @@ while webcam.isOpened():
         text = "Looking right"
     elif gaze.is_left():
         text = "Looking left"
-    elif gaze.is_center():
+    elif gaze.is_center():#gaze up and under
         if gaze.is_up():
             text = "Looking upward"
         elif gaze.is_down():
             text = "Looking under"
         else:
             text = "Looking center"
-    #print(gaze.out_of_monitor())
+
     # if out_of_monitor False, no monitor time is not initialize
     # So if out_of_monitor False, your not watch monitor
     now_study_time = datetime.now()
@@ -58,13 +60,11 @@ while webcam.isOpened():
         study_time += (now_study_time - start_study_time)
     start_study_time = now_study_time
 
-    print(f"study time : {study_time}")
+    #print(f"study time : {study_time}")
     if not gaze.out_of_monitor():
         if no_monitor_time == 0:
-            print("Your Study Right Now")
             no_monitor_time = datetime.now()
         elif (datetime.now() - no_monitor_time) > timedelta(seconds=10) and are_you_study:
-            print("Your not Study!!!!")
             are_you_study = False
             study_time -= (datetime.now() - no_monitor_time)
     else:
