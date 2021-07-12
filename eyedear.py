@@ -248,7 +248,7 @@ def setup():
 
     cv2.destroyWindow("SetUp")
     thresholdFile.close()
-    gaze = GazeTracking()
+    gaze = GazeTracking() #for update threshold
     
 
 def onClick():
