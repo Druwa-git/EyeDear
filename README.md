@@ -2,6 +2,10 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)  
 
+![Demo_Final](https://user-images.githubusercontent.com/51294226/125287022-67ea4b80-e357-11eb-8472-ce20efef9b51.gif)  
+
+
+
 **Developer : 황동준, 나종석, 장치근, 조영진, 한예지**  
 **해당 프로젝트에는 다음과 같은 3가지 기능이 있습니다**
 1. 웹캠을 이용한 안구건조증 예방 알림 기능  
@@ -116,13 +120,107 @@ if (now_study_time - count_blink_one_minute) > timedelta(seconds=60):
  다음과 같이 시간특정을 하게 됨. `count_blink_one_minute`는 1분마다 초기화 되며, `now_study_time`은 현재 시간을 의미함.  
  `blinking`측정 main code는 다음과 같음.  
  ```python
- 
+ landmarks = face_utils.shape_to_np(landmarks)
+if side == 0:
+     eye_img, eye_rect = self.crop_eye(origin_frame, eye_points=landmarks[36:42])
+     eye_img = cv2.resize(eye_img, dsize=self.IMG_SIZE)
+elif side == 1:
+    eye_img, eye_rect = self.crop_eye(origin_frame, eye_points=landmarks[42:48])
+    eye_img = cv2.resize(eye_img, dsize=self.IMG_SIZE)
+    eye_img = cv2.flip(eye_img, flipCode=1)
+
+eye_input = eye_img.copy().reshape((1, self.IMG_SIZE[1], self.IMG_SIZE[0], 1)).astype(np.float32) / 255.
+pred = blinking_model.predict(eye_input)
+#if blink, state == 1
+state = False if pred > 0.1 else True
+```
 
 ### 2. 주기적인 자세 교체 권고  
+`face landmark detection`으로 얼굴의 가장 가운데 좌표를 가져오게 됨.  
 
+위의 데모버전 처럼, 창에 `C`라고 표시되어 있는 부분이 얼굴의 중심을 의미함.  
+```python
+        face_loc = gaze.face_coords()
+        if face_loc != None:
+            face_x, face_y = face_loc.center().x, face_loc.center().y
+            if face_std_x == 0 and face_std_y == 0:
+                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~", fg="black")
+                pose_time = datetime.now()
+                face_std_x = face_x
+                face_std_y = face_y
+            elif abs(face_std_x - face_x) > 100 or abs(face_std_y - face_y) > 50:
+                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~", fg="black")
+                pose_time = datetime.now()
+                face_std_x = face_x
+                face_std_y = face_y
+            elif (now_study_time - pose_time) > timedelta(minutes=1):
+                label2.configure(text="슬슬 자세를 고치세요.", fg="red")
+ ```
+ 현재 범위는 x좌표가 100이상, y좌표가 50이상 벗어나면 새로운 자세라고 판단하여, 자세의 기준이 옮겨짐.  
+ 또한 해당 자세가 50분 이상 지속될 경우, 경고를 띄우게 된다.  
 
 ### 3. Gaze tracking을 이용한 작업시간 측정
+```python
+        now_study_time = datetime.now()
+        if are_you_study:
+            study_time += (now_study_time - start_study_time)
+        start_study_time = now_study_time
 
+        if not gaze.out_of_monitor():
+            if no_monitor_time == 0:
+                print("Your Study Right Now")
+                no_monitor_time = datetime.now()
+            elif (datetime.now() - no_monitor_time) > timedelta(seconds=10) and are_you_study:
+                print("Your not Study!!!!")
+                are_you_study = False
+                study_time -= (datetime.now() - no_monitor_time)
+        else:
+            are_you_study = True
+            no_monitor_time = 0
+```
+`now_study_time`은 현재 시간을, `are_you_study`는 공부를 하고 있는지 아닌지를 측정한다.  
+따라서, `are_you_study`가 `True`일 경우 작업시간을 흐르게 하도록 만든다.  
+
+`gaze.out_of_monitor`는 다음과 같은 코드로 `monitor`를 주시하는 지 아닌지 판단할 수 있도록 만든다.  
+```python
+        def out_of_monitor(self):
+        if self.gaze_in:
+            if not self.pupils_located:
+                self.gaze_in = False
+            else:
+                if not self.is_center():
+                    self.gaze_in = False
+        return self.gaze_in
+```
+`pupil_located`는 동공이 인식되는 경우 즉, 눈을 뜨고있는 경우이기 때문에, 만약 인식이 안될 경우 모니터 밖으로 시선이 분산되었다고 측정한다.
+
+
+그리고 모니터를 응시하지 않는 경우 즉, `is_center()` 함수가 `False`를 `return` 하는 경우 모니터를 응시하지 않는 것으로 판단한다.  
+
+## 실행파일 및 팝업창
+팝업창은 `tkinter`를 이용하여 만들 수 있었다.  
+
+다음과 같이 함수를 선언하여 `popup` 창을 띄웠다.
+```python
+root = Tk()
+root.title('Eye Dear')
+root.geometry("+500+10")
+
+...
+
+video_stream()
+root.mainloop()
+```
+여기서 `video_stream()`은 반복적으로 팝업창에서 실행될 함수이다.  
+
+또한 `Setup Button`을 만들어 프로그램 내에서 `Threshold Setting`을 바꿀 수 있도록 하였다.  
+```python
+def onClick():
+    setup()
+
+setup_btn = Button(root, text="setup", command=onClick, width=10, height=2, font= ('Helvetica 15 bold'))
+setup_btn.grid(row=4, column=0)
+```
 
 ## Reference
 
