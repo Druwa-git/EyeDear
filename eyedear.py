@@ -7,7 +7,7 @@ import cv2
 try:
     from EyeDear import gaze_tracking
 except:
-    print("EyeDear not found")
+    print("EyeDear folder not found")
 from gaze_tracking import GazeTracking
 from datetime import datetime
 from datetime import timedelta
