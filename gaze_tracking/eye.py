@@ -103,7 +103,7 @@ class Eye(object):
             eye_img, eye_rect = self.crop_eye(origin_frame, eye_points=landmarks[36:42])
             eye_img = cv2.resize(eye_img, dsize=self.IMG_SIZE)
         elif side == 1:
-            eye_img, eye_rect = self.crop_eye(origin_frame, eye_points=landmarks[36:42])
+            eye_img, eye_rect = self.crop_eye(origin_frame, eye_points=landmarks[42:48])
             eye_img = cv2.resize(eye_img, dsize=self.IMG_SIZE)
             eye_img = cv2.flip(eye_img, flipCode=1)
 
