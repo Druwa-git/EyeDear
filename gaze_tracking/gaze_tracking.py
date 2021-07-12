@@ -29,7 +29,7 @@ class GazeTracking(object):
         self._predictor = dlib.shape_predictor(model_path)
 
         #blinking model
-        model_path = os.path.abspath(os.path.join(cwd, "trained_models/2018_12_17_22_58_35.h5"))
+        model_path = os.path.abspath(os.path.join(cwd, "trained_models/2021_07_12_15_20_04.h5"))
         self.blinking_model = load_model(model_path)
         self.blinking_model.summary()
 
