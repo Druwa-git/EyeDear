@@ -164,7 +164,7 @@ def video_stream():
                 pose_time = datetime.now()
                 face_std_x = face_x
                 face_std_y = face_y
-            elif (now_study_time - pose_time) > timedelta(minutes=1):
+            elif (now_study_time - pose_time) > timedelta(minutes=50):
                 label2.configure(text="슬슬 자세를 고치세요.", fg="red")
             #print((now_study_time - pose_time))
             cv2.putText(frame, "C", (face_loc.center().x, face_loc.center().y), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
@@ -255,7 +255,6 @@ def setup():
     cv2.destroyWindow("SetUp")
     thresholdFile.close()
     gaze = GazeTracking() #for update threshold
-    
 
 def onClick():
     setup()
