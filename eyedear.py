@@ -9,7 +9,7 @@ from datetime import datetime
 from datetime import timedelta
 from tkinter import *
 from PIL import ImageTk, Image
-
+#from setup_threshold import setup
 
 # eye = Eye()
 gaze = GazeTracking()
@@ -54,11 +54,11 @@ label3.grid(row=2, column=0, columnspan=2, pady=2)
 label_cam = Label(root)
 label_cam.grid(row=3, column=0, columnspan=2, pady=2)
 
-button = Button(root, text="quit", command=root.destroy, width=10, height=2, font= ('Helvetica 15 bold'))
-button.grid(row=4, column=0, pady=2)
+button = Button(root,text="quit", command=root.destroy, width=10, height=2, font= ('Helvetica 15 bold'))
+button.grid(row=4, column=1, pady=2)
 
-setup_btn = Button(root, text="setup", command=setup, width=10, height=2, font= ('Helvetica 15 bold'))
-setup_btn.grid(row=4, column=1, pady=2)
+#setup_btn = Button(root, text="setup", command=setup, width=10, height=2, font= ('Helvetica 15 bold'))
+#setup_btn.grid(row=4, column=1, pady=2)
 
 
 def video_stream():
@@ -245,7 +245,8 @@ def setup():
 
 def onClick():
     setup()
-setup_btn = Button(root, text="setup", command=onClick)
+
+setup_btn = Button(root, text="setup", command=onClick, width=10, height=2, font= ('Helvetica 15 bold'))
 setup_btn.grid(row=4, column=0)
 video_stream()
 root.mainloop()
