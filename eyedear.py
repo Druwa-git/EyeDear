@@ -9,7 +9,7 @@ from datetime import datetime
 from datetime import timedelta
 from tkinter import *
 from PIL import ImageTk, Image
-from setup_threshold import setup
+
 
 # eye = Eye()
 gaze = GazeTracking()
@@ -38,7 +38,7 @@ pose_time = datetime.now()
 
 
 root = Tk()
-root.title('화면')
+root.title('Eye Dear')
 root.geometry("+500+10")
 label1 = Label(root, text="안구건조증 증상 측정 중입니다.", font= ('Helvetica 15 bold'), height=2, width=28, borderwidth=2, relief="ridge")
 label1.grid(row=0, column=0, pady=2)
@@ -59,6 +59,7 @@ button.grid(row=4, column=0, pady=2)
 
 setup_btn = Button(root, text="setup", command=setup, width=10, height=2, font= ('Helvetica 15 bold'))
 setup_btn.grid(row=4, column=1, pady=2)
+
 
 def video_stream():
     global study_time, are_you_study, start_study_time, no_monitor_time
@@ -166,6 +167,85 @@ def video_stream():
         label_cam.configure(image=imgtk)
         label_cam.after(1, video_stream)
 
+def setup():
+    setCount = 0
+    setThreshold = 0
 
+    direction = ["left", "right", "upward", "under"]
+    direction_key = ["A", "S", "D", "F"]
+    direction_index = 0
+
+    thresholdFile = open("gaze_tracking/threshold.txt", 'w')
+
+    while webcam.isOpened():
+        _, frame2 = webcam.read()
+        gaze.refresh(frame2)
+        frame2 = gaze.annotated_frame()
+
+        text = "Please turn your eyes to the " + direction[direction_index]
+        text_push = "Push Button " + direction_key[direction_index] + " To SetUp Your Threshold!!"
+
+        cv2.putText(frame2, text, (20, 60), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 2)
+        cv2.putText(frame2, text_push, (20, 130), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
+        cv2.imshow("SetUp", frame2)
+
+        #left
+        if cv2.waitKey(1) == ord('a') and direction_index == 0:
+            print(setThreshold, direction_index, setCount)
+            if setCount > 10:
+                direction_index += 1
+                thresholdFile.write(str(setThreshold / setCount) + "\n")
+                setCount = 0
+                setThreshold = 0
+            if gaze.pupils_located:
+                setThreshold += gaze.horizontal_ratio()
+                setCount += 1
+        #right
+        elif cv2.waitKey(1) == ord('s') and direction_index == 1:
+            print(setThreshold, direction_index, setCount)
+            if setCount > 10:
+                direction_index += 1
+                thresholdFile.write(str(setThreshold / setCount) + "\n")
+                setCount = 0
+                setThreshold = 0
+            if gaze.pupils_located:
+                setThreshold += gaze.horizontal_ratio()
+                setCount += 1
+        #upward
+        elif cv2.waitKey(1) == ord('d') and direction_index == 2:
+            print(setThreshold, direction_index, setCount)
+            if setCount > 10:
+                direction_index += 1
+                thresholdFile.write(str(setThreshold / setCount) + "\n")
+                setCount = 0
+                setThreshold = 0
+            if gaze.pupils_located:
+                setThreshold += gaze.vertical_ratio()
+                setCount += 1
+        #under
+        elif cv2.waitKey(1) == ord('f') and direction_index == 3:
+            print(setThreshold, direction_index, setCount)
+            if setCount > 10:
+                direction_index += 1
+                thresholdFile.write(str(setThreshold / setCount) + "\n")
+                setCount = 0
+                setThreshold = 0
+            if gaze.pupils_located:
+                setThreshold += gaze.vertical_ratio()
+                setCount += 1
+
+
+        if direction_index > 3 :
+            break
+
+        if cv2.waitKey(1) == ord('q'):
+            break
+    
+    cv2.destroyWindow("SetUp")
+
+def onClick():
+    setup()
+setup_btn = Button(root, text="setup", command=onClick)
+setup_btn.grid(row=4, column=0)
 video_stream()
 root.mainloop()
