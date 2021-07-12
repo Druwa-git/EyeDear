@@ -190,3 +190,7 @@ class GazeTracking(object):
             cv2.line(frame, (x_right, y_right - 5), (x_right, y_right + 5), color)
 
         return frame
+
+    def file_check(self):
+        """Checking file changed after SetUp"""
+        return self.left_threshold, self.right_threshold, self.upward_threshold, self.under_threshold

@@ -4,12 +4,15 @@ Check the README.md for complete documentation.
 """
 
 import cv2
+try:
+    from EyeDear import gaze_tracking
+except:
+    print("EyeDear not found")
 from gaze_tracking import GazeTracking
 from datetime import datetime
 from datetime import timedelta
 from tkinter import *
 from PIL import ImageTk, Image
-
 
 # eye = Eye()
 gaze = GazeTracking()
@@ -56,9 +59,10 @@ button.grid(row=4, column=1)
 def video_stream():
     global study_time, are_you_study, start_study_time, no_monitor_time
     global count_blink_one_minute, before_blink, blink_count
-    global face_x, face_y, face_std_x, face_std_y, pose_time
+    global face_x, face_y, face_std_x, face_std_y, pose_time, gaze
 
     _, frame = webcam.read()
+
     if not _:
         print("WebCam is not detected")
     
@@ -159,6 +163,7 @@ def video_stream():
         label_cam.after(1, video_stream)
 
 def setup():
+    global gaze
     setCount = 0
     setThreshold = 0
 
@@ -231,8 +236,11 @@ def setup():
 
         if cv2.waitKey(1) == ord('q'):
             break
-    
+
     cv2.destroyWindow("SetUp")
+    thresholdFile.close()
+    gaze = GazeTracking()
+    
 
 def onClick():
     setup()
