@@ -55,7 +55,7 @@ while webcam.isOpened():
             direction_index += 1
             setCount = 0
             
-        if not gaze.pupils_located:
+        try:
             landmarks = gaze._predictor(frame, faces[0])
             landmarks = face_utils.shape_to_np(landmarks)
             eye_img_l, eye_rect_l = gaze.eye_left.crop_eye(frame, eye_points=landmarks[36:42])
@@ -68,6 +68,8 @@ while webcam.isOpened():
             cv2.imwrite('./dataset/close_Right%d.jpg' %setCount ,eye_img_r, params=[cv2.IMWRITE_JPEG_QUALITY,100])
             print(setCount, direction[direction_index], ' save img')
             setCount += 1
+        except:
+            pass
     
     if direction_index == 2 :
         if cv2.waitKey(1) == ord('q'):
