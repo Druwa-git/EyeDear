@@ -39,13 +39,9 @@ while webcam.isOpened():
             landmarks = gaze._predictor(frame, faces[0])
             landmarks = face_utils.shape_to_np(landmarks)
             eye_img_l, eye_rect_l = gaze.eye_left.crop_eye(frame, eye_points=landmarks[36:42])
-            eye_img_r, eye_rect_r = gaze.eye_left.crop_eye(frame, eye_points=landmarks[42:48])
             eye_img_l = cv2.resize(eye_img_l, dsize=IMG_SIZE)
             eye_img_l = cv2.cvtColor(eye_img_l, cv2.COLOR_BGR2GRAY)
-            eye_img_r = cv2.resize(eye_img_r, dsize=IMG_SIZE)
-            eye_img_r = cv2.cvtColor(eye_img_r, cv2.COLOR_BGR2GRAY)
             cv2.imwrite('./dataset/open_Left%d.jpg' %setCount ,eye_img_l, params=[cv2.IMWRITE_JPEG_QUALITY,100])
-            cv2.imwrite('./dataset/open_Right%d.jpg' %setCount ,eye_img_r, params=[cv2.IMWRITE_JPEG_QUALITY,100])
             print(setCount, direction[direction_index], ' save img')
             setCount += 1
     #save close img
@@ -54,18 +50,14 @@ while webcam.isOpened():
         if setCount > 20:
             direction_index += 1
             setCount = 0
-            
+
         try:
             landmarks = gaze._predictor(frame, faces[0])
             landmarks = face_utils.shape_to_np(landmarks)
             eye_img_l, eye_rect_l = gaze.eye_left.crop_eye(frame, eye_points=landmarks[36:42])
-            eye_img_r, eye_rect_r = gaze.eye_left.crop_eye(frame, eye_points=landmarks[42:48])
             eye_img_l = cv2.resize(eye_img_l, dsize=IMG_SIZE)
             eye_img_l = cv2.cvtColor(eye_img_l, cv2.COLOR_BGR2GRAY)
-            eye_img_r = cv2.resize(eye_img_r, dsize=IMG_SIZE)
-            eye_img_r = cv2.cvtColor(eye_img_r, cv2.COLOR_BGR2GRAY)
             cv2.imwrite('./dataset/close_Left%d.jpg' %setCount ,eye_img_l, params=[cv2.IMWRITE_JPEG_QUALITY,100])
-            cv2.imwrite('./dataset/close_Right%d.jpg' %setCount ,eye_img_r, params=[cv2.IMWRITE_JPEG_QUALITY,100])
             print(setCount, direction[direction_index], ' save img')
             setCount += 1
         except:
