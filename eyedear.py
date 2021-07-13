@@ -38,36 +38,41 @@ face_std_y = 0
 
 # stay pose
 pose_time = datetime.now()
+minute_pose_time = 1 # default
+change_minute = False
 
+# User Name
+user_name = "사용자"
 
 root = Tk()
 root.title('Eye Dear')
 root.geometry("+500+10")
-label1 = Label(root, text="안구건조증 증상 측정 중입니다.", font= ('Helvetica 15 bold'), height=2, width=28, borderwidth=2, relief="ridge")
-label1.grid(row=0, column=0, pady=2)
+label1 = Label(root, text="안구건조증 증상 측정 중입니다.", font= ('Helvetica 15 bold'), height=2, width=50, borderwidth=2, relief="ridge")
+label1.grid(row=0, column=0, columnspan=3, pady=2)
 
-label_blink_count = Label(root, text="깜빡임 0번", font= ('Helvetica 15 bold'), height=2, width=18, borderwidth=2, relief="ridge")
-label_blink_count.grid(row=0, column=1)
-
-label2 = Label(root, text="자세교정", font= ('Helvetica 15 bold'), height=2, width=50, borderwidth=2, relief="ridge")
+label2 = Label(root, text="자세교정", font= ('Helvetica 15 bold'), height=2, width=28, borderwidth=2, relief="ridge")
 label2.grid(row=1, column=0, columnspan=2, pady=2)
 
+label2_1 = Label(root, text=f"자세주기 {minute_pose_time}분" , font= ('Helvetica 15 bold'), height=2, width=18, borderwidth=2, relief="ridge")
+label2_1.grid(row=1, column=2, pady=2)
+
 label3 = Label(root, text="공부시간", font= ('Helvetica 15 bold'), height=2, width=50, borderwidth=2, relief="ridge")
-label3.grid(row=2, column=0, columnspan=2, pady=2)
+label3.grid(row=2, column=0, columnspan=3, pady=2)
 label_cam = Label(root)
-label_cam.grid(row=3, column=0, columnspan=2, pady=2)
+label_cam.grid(row=3, column=0, columnspan=3, pady=2)
 
 button = Button(root,text="quit", command=root.destroy, width=10, height=2, font= ('Helvetica 15 bold'))
-button.grid(row=4, column=1, pady=2)
+button.grid(row=4, column=2)
 
 #setup_btn = Button(root, text="setup", command=setup, width=10, height=2, font= ('Helvetica 15 bold'))
 #setup_btn.grid(row=4, column=1, pady=2)
-
 
 def video_stream():
     global study_time, are_you_study, start_study_time, no_monitor_time
     global count_blink_one_minute, before_blink, blink_count
     global face_x, face_y, face_std_x, face_std_y, pose_time, gaze
+    global change_minute, minute_pose_time
+    global user_name
 
     _, frame = webcam.read()
 
@@ -87,7 +92,6 @@ def video_stream():
             if before_blink == False:
                 blink_count += 1
                 before_blink = True
-                label_blink_count.configure(text=f"깜빡임 {str(blink_count)}번")
         elif gaze.is_right():
             before_blink = False
             text = "Looking right"
@@ -136,29 +140,35 @@ def video_stream():
         # now = now_study_time.second # 현재 시간
 
         # 눈깜박임 횟수 세서 팝업창띄우기(15회미만이고 1분이 지났으면)
-        if (now_study_time - count_blink_one_minute) > timedelta(seconds=60):
+        if (now_study_time - count_blink_one_minute) > timedelta(seconds=10):
             count_blink_one_minute = datetime.now()
             if blink_count <= 15:
-                label1.configure(text = f"건조해!", fg='red')
+                label1.configure(text=f"{user_name}님은 1분에 {blink_count}번 눈을 깜빡이셨습니다. \n안구건조증 예방을 위해 눈을 더 깜빡여주세요.",
+                                 font=('Helvetica 15 bold'), fg='red')
                 blink_count = 0
             else:
-                label1.configure(text = f"안 건조해!", fg='black')
+                label1.configure(text=f"{user_name}님은 1분에 {blink_count}번 눈을 깜빡이셨습니다. \n지금처럼 눈을 자주 깜빡여주세요.",
+                                 font=('Helvetica 15 bold'), fg='black')
                 blink_count = 0
+
+        if change_minute:
+            label2_1.configure(text=f"자세주기 {minute_pose_time}분")
+            change_minute = False
 
         face_loc = gaze.face_coords()
         if face_loc != None:
             face_x, face_y = face_loc.center().x, face_loc.center().y
             if face_std_x == 0 and face_std_y == 0:
-                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~", fg="black")
+                label2.configure(text="자세를 고치지 않아도 됩니다.", fg="black")
                 pose_time = datetime.now()
                 face_std_x = face_x
                 face_std_y = face_y
             elif abs(face_std_x - face_x) > 100 or abs(face_std_y - face_y) > 50:
-                label2.configure(text="자세를 고치지 않아도 됩니다. 1분 뒤에 봬요~", fg="black")
+                label2.configure(text="자세를 고치지 않아도 됩니다.", fg="black")
                 pose_time = datetime.now()
                 face_std_x = face_x
                 face_std_y = face_y
-            elif (now_study_time - pose_time) > timedelta(minutes=1):
+            elif (now_study_time - pose_time) > timedelta(minutes=minute_pose_time):
                 label2.configure(text="슬슬 자세를 고치세요.", fg="red")
             #print((now_study_time - pose_time))
             cv2.putText(frame, "C", (face_loc.center().x, face_loc.center().y), cv2.FONT_HERSHEY_DUPLEX, 0.3, (147, 58, 31), 1)
@@ -254,7 +264,55 @@ def setup():
 def onClick():
     setup()
 
+def param_setup():
+    #global minute_pose_time, change_minute
+    # 자세교정 Entry Box
+    tk_param = Tk()
+    tk_param.title('Settings')
+    tk_param.geometry("+500+10")
+
+    def set_pose_time(event):
+        global minute_pose_time, change_minute
+        minute_pose_time = int(label2_entry.get())
+        print(minute_pose_time)
+        change_minute = True
+
+    def set_user_name(event):
+        global user_name
+        user_name = str(label3_entry.get())
+        print(user_name)
+
+    param_label1 = Label(tk_param, text="입력 후 Enter을 눌러주세요.", font= ('Helvetica 15 bold'), height=2, width=40, borderwidth=2, relief="ridge")
+    param_label1.grid(row=0, column=0, columnspan=2, pady=2)
+
+    param_label2 = Label(tk_param, text="자세권고 주기 : ", font= ('Helvetica 15 bold'), height=2, width=23, borderwidth=2, relief="flat")
+    param_label2.grid(row=1, column=0)
+
+    label2_entry = Entry(tk_param, width=13, borderwidth=2, relief="ridge")
+    label2_entry.bind("<Return>", set_pose_time)
+    label2_entry.grid(row=1, column=1, pady=2)
+
+    param_label3 = Label(tk_param, text="사용자 이름 : ", font=('Helvetica 15 bold'), height=2, width=23, borderwidth=2,
+                         relief="flat")
+    param_label3.grid(row=2, column=0)
+
+    label3_entry = Entry(tk_param, width=13, borderwidth=2, relief="ridge")
+    label3_entry.bind("<Return>", set_user_name)
+    label3_entry.grid(row=2, column=1, pady=2)
+
+    quit_button = Button(tk_param, text="quit", command=tk_param.destroy, width=10, height=2, font=('Helvetica 15 bold'))
+    quit_button.grid(row=3, column=0, columnspan=2, pady=2)
+
+    tk_param.mainloop()
+
+
+#Param Setup Button
+param_setup_btn = Button(root, text="Settings", command=param_setup, width=10, height=2, font= ('Helvetica 15 bold'))
+param_setup_btn.grid(row=4, column=1)
+#Set up Button
 setup_btn = Button(root, text="setup", command=onClick, width=10, height=2, font= ('Helvetica 15 bold'))
 setup_btn.grid(row=4, column=0)
+
+
 video_stream()
 root.mainloop()
